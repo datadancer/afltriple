@@ -408,9 +408,15 @@ static const u8* main_payload_64 =
   "  /* Calculate and store hit for the code location specified in rcx. */\n"
   "\n"
 #ifndef COVERAGE_ONLY
-  "  xorq __afl_prev_loc(%rip), %rcx\n"
-  "  xorq %rcx, __afl_prev_loc(%rip)\n"
+  "  movq %rax, __afl_tprev_loc(%rip)\n"
+  "  movq __afl_prev_loc(%rip), %rax\n"
+  "  movq %rcx, __afl_prev_loc(%rip)\n"
+  "  xorq __afl_pprev_loc(%rip), %rax\n"
+  "  xorq %rax, __afl_pprev_loc(%rip)\n"
+  "  xorq %rax, %rcx\n"
   "  shrq $1, __afl_prev_loc(%rip)\n"
+  "  shrq $1, __afl_pprev_loc(%rip)\n"
+  "  movq __afl_tprev_loc(%rip), %rax\n"
 #endif /* ^!COVERAGE_ONLY */
   "\n"
 #ifdef SKIP_COUNTS
@@ -691,6 +697,8 @@ static const u8* main_payload_64 =
   "  .comm   __afl_area_ptr, 8\n"
 #ifndef COVERAGE_ONLY
   "  .comm   __afl_prev_loc, 8\n"
+  "  .comm   __afl_pprev_loc, 8\n"
+  "  .comm   __afl_tprev_loc, 8\n"
 #endif /* !COVERAGE_ONLY */
   "  .comm   __afl_fork_pid, 4\n"
   "  .comm   __afl_temp, 4\n"
@@ -701,6 +709,8 @@ static const u8* main_payload_64 =
   "  .lcomm   __afl_area_ptr, 8\n"
 #ifndef COVERAGE_ONLY
   "  .lcomm   __afl_prev_loc, 8\n"
+  "  .lcomm   __afl_pprev_loc, 8\n"
+  "  .lcomm   __afl_tprev_loc, 8\n"
 #endif /* !COVERAGE_ONLY */
   "  .lcomm   __afl_fork_pid, 4\n"
   "  .lcomm   __afl_temp, 4\n"
